@@ -1,0 +1,25 @@
+# Terraform State Files (Sensitive Data)
+*.tfstate
+*.tfstate.*
+terraform.tfstate.backup
+terraform.tfstate.d*
+
+# Terraform Plan Files (Temporary)
+*.tfplan
+
+# Terraform Lock File (Local Dependency Management)
+.terraform.lock.hcl
+
+# Terraform Working Directory
+.terraform/
+
+# Crash Logs (Terraform Debugging)
+crash.log
+
+# Ignore Sensitive Environment Files
+.env
+.aws/
+.env.*.local
+
+# Ignore Terraform Logs
+terraform.log
