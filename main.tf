@@ -35,28 +35,70 @@ module "vpc" {
   tags = local.common_tags
 }
 
-# --- Outputs ---
-output "vpc_id" {
-  description = "The ID of the VPC"
-  value       = module.vpc.vpc_id
+# ---Key Pair for EC2 ---
+resource "aws_key_pair" "ec2_key" {
+  key_name   = "fintrack-key" 
+  public_key = tls_private_key.rsa.public_key_openssh
+}
+resource "tls_private_key" "rsa" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+resource "local_file" "private_key" {
+  content  = tls_private_key.rsa.private_key_pem
+  filename = "fintrack-key"
+  
 }
 
-output "public_subnet_ids" {
-  description = "List of IDs of public subnets"
-  value       = module.vpc.public_subnet_ids
+# --- Security Group for SSH Access ---
+resource "aws_security_group" "ssh_access" {
+  name        = "allow-ssh"
+  description = "Allow SSH access"
+  vpc_id      = module.vpc.vpc_id
+
+  ingress {
+    description = "SSH access"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] # Replace with a specific IP range for better security
+  }
+  ingress {
+    description = "application port access"
+    from_port   = 5001
+    to_port     = 5001
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] # Replace with a specific IP range for better security
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = local.common_tags
 }
 
-output "private_subnet_ids" {
-  description = "List of IDs of private subnets"
-  value       = module.vpc.private_subnet_ids
-}
 
-output "availability_zones" {
-  description = "List of availability zones used"
-  value       = module.vpc.availability_zones_used
-}
 
-output "nat_gateway_ips" {
-  description = "Public IPs of the NAT Gateways"
-  value       = module.vpc.nat_gateway_public_ips
+# --- EC2 Module ---
+module "ec2" {
+  source = "./modules/ec2" # Path to your EC2 module
+
+  name_prefix     = var.name_prefix
+  environment     = local.environment
+  ami_id          = var.ami_id
+  instance_type   = var.instance_type
+  subnet_id       = module.vpc.public_subnet_ids[0]
+  key_name        = "fintrack-key" 
+  associate_public_ip_address = true
+  vpc_security_group_ids = [aws_security_group.ssh_access.id] # Associate the security group
+
+  user_data = file("${path.module}/scripts/user_data.sh") # Path to your user data script
+
+  tags = {
+    Role = "WebServer"
+  }
 }

@@ -1,4 +1,11 @@
 terraform {
+
+  backend "s3" {
+    bucket         = "fintrack-terraform-state-bucket"
+    key            = "terraform.tfstate"
+    region         = "us-east-1"# specify your region
+    encrypt        = true
+  }
   required_providers {
     aws = {
       source  = "hashicorp/aws"
