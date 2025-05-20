@@ -25,33 +25,33 @@ resource "aws_instance" "this" {
   monitoring                  = var.monitoring
   disable_api_termination     = var.disable_api_termination
 
-  dynamic "root_block_device" {
-    for_each = var.root_block_device
-    content {
-      volume_size           = root_block_device.value.volume_size
-      volume_type           = root_block_device.value.volume_type
-      delete_on_termination = root_block_device.value.delete_on_termination
-      encrypted             = root_block_device.value.encrypted
-      kms_key_id            = root_block_device.value.kms_key_id
-      iops                  = root_block_device.value.iops
-      throughput            = root_block_device.value.throughput
-    }
-  }
+  # dynamic "root_block_device" {
+  #   for_each = var.root_block_device
+  #   content {
+  #     volume_size           = root_block_device.value.volume_size
+  #     volume_type           = root_block_device.value.volume_type
+  #     delete_on_termination = root_block_device.value.delete_on_termination
+  #     encrypted             = root_block_device.value.encrypted
+  #     kms_key_id            = root_block_device.value.kms_key_id
+  #     iops                  = root_block_device.value.iops
+  #     throughput            = root_block_device.value.throughput
+  #   }
+  # }
 
-  dynamic "ebs_block_device" {
-    for_each = var.ebs_block_device
-    content {
-      device_name           = ebs_block_device.value.device_name
-      volume_size           = ebs_block_device.value.volume_size
-      volume_type           = ebs_block_device.value.volume_type
-      delete_on_termination = ebs_block_device.value.delete_on_termination
-      encrypted             = ebs_block_device.value.encrypted
-      kms_key_id            = ebs_block_device.value.kms_key_id
-      iops                  = ebs_block_device.value.iops
-      throughput            = ebs_block_device.value.throughput
-      snapshot_id           = ebs_block_device.value.snapshot_id
-    }
-  }
+  # dynamic "ebs_block_device" {
+  #   for_each = var.ebs_block_device
+  #   content {
+  #     device_name           = ebs_block_device.value.device_name
+  #     volume_size           = ebs_block_device.value.volume_size
+  #     volume_type           = ebs_block_device.value.volume_type
+  #     delete_on_termination = ebs_block_device.value.delete_on_termination
+  #     encrypted             = ebs_block_device.value.encrypted
+  #     kms_key_id            = ebs_block_device.value.kms_key_id
+  #     iops                  = ebs_block_device.value.iops
+  #     throughput            = ebs_block_device.value.throughput
+  #     snapshot_id           = ebs_block_device.value.snapshot_id
+  #   }
+  # }
 
   tags = local.common_tags
 

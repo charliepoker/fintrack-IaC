@@ -11,7 +11,7 @@ locals {
   num_azs = length(var.availability_zones)
 }
 
-# --- VPC ---
+#  VPC 
 resource "aws_vpc" "main" {
   cidr_block           = var.vpc_cidr_block
   enable_dns_support   = true
@@ -22,7 +22,7 @@ resource "aws_vpc" "main" {
   })
 }
 
-# --- Internet Gateway ---
+# Internet Gateway 
 resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.main.id
 
@@ -31,7 +31,7 @@ resource "aws_internet_gateway" "igw" {
   })
 }
 
-# --- Public Subnets ---
+#  Public Subnets
 resource "aws_subnet" "public" {
   count                   = length(var.public_subnet_cidrs)
   vpc_id                  = aws_vpc.main.id
@@ -45,7 +45,7 @@ resource "aws_subnet" "public" {
   })
 }
 
-# --- Private Subnets ---
+# Private Subnets 
 resource "aws_subnet" "private" {
   count                   = length(var.private_subnet_cidrs)
   vpc_id                  = aws_vpc.main.id
@@ -81,7 +81,7 @@ resource "aws_subnet" "private" {
 #   depends_on = [aws_internet_gateway.igw]
 # }
 
-# --- Public Route Table ---
+#  Public Route Table 
 resource "aws_route_table" "public_rt" {
   vpc_id = aws_vpc.main.id
 
@@ -131,7 +131,7 @@ resource "aws_route_table_association" "public_rta" {
 #   ].id
 # }
 
-# (Optional) Default Network ACL - You might want to customize this
+# Default Network ACL 
 resource "aws_default_network_acl" "default" {
   default_network_acl_id = aws_vpc.main.default_network_acl_id
 
@@ -158,36 +158,36 @@ resource "aws_default_network_acl" "default" {
   })
 }
 
-# (Optional) Default Security Group - You might want to customize this
-resource "aws_default_security_group" "default" {
-  vpc_id = aws_vpc.main.id
+#  Default Security Group 
+# resource "aws_default_security_group" "default" {
+#   vpc_id = aws_vpc.main.id
 
-  # Allow traffic between resources in this security group
-  ingress {
-    protocol  = -1
-    self      = true
-    from_port = 0
-    to_port   = 0
-  }
+#   # Allow traffic between resources in this security group
+#   ingress {
+#     protocol  = -1
+#     self      = true
+#     from_port = 0
+#     to_port   = 0
+#   }
 
-  # Allow inbound access to port 5001 from anywhere (for the application)
-  ingress {
-    protocol    = "tcp"
-    from_port   = 5001
-    to_port     = 5001
-    cidr_blocks = ["0.0.0.0/0"]
-    description = "Allow public access to fintrack application on port 5001"
-  }
+#   # Allow inbound access to port 5001 from anywhere (for the application)
+#   ingress {
+#     protocol    = "tcp"
+#     from_port   = 5001
+#     to_port     = 5001
+#     cidr_blocks = ["0.0.0.0/0"]
+#     description = "Allow public access to fintrack application on port 5001"
+#   }
 
-  # Allow all outbound traffic
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+#   # Allow all outbound traffic
+#   egress {
+#     from_port   = 0
+#     to_port     = 0
+#     protocol    = "-1"
+#     cidr_blocks = ["0.0.0.0/0"]
+#   }
 
-  tags = merge(local.common_tags, {
-    Name = "${var.project_name}-default-sg-${var.environment}"
-  })
-}
+#   tags = merge(local.common_tags, {
+#     Name = "${var.project_name}-default-sg-${var.environment}"
+#   })
+# }

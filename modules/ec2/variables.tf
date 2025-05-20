@@ -59,35 +59,35 @@ variable "associate_public_ip_address" {
   default     = false
 }
 
-variable "root_block_device" {
-  description = "Configuration for the root block device."
-  type = list(object({
-    volume_size           = optional(number, 8)    # Default 8 GB
-    volume_type           = optional(string, "gp3") # Default gp3
-    delete_on_termination = optional(bool, true)
-    encrypted             = optional(bool, false)
-    kms_key_id            = optional(string, null)
-    iops                  = optional(number, null) # For io1, io2, gp3
-    throughput            = optional(number, null) # For gp3
-  }))
-  default = [{}] # Provides default empty object to trigger internal defaults if not specified
-}
+# variable "root_block_device" {
+#   description = "Configuration for the root block device."
+#   type = list(object({
+#     volume_size           = optional(number, 8)    # Default 8 GB
+#     volume_type           = optional(string, "gp3") # Default gp3
+#     delete_on_termination = optional(bool, true)
+#     encrypted             = optional(bool, false)
+#     kms_key_id            = optional(string, null)
+#     iops                  = optional(number, null) # For io1, io2, gp3
+#     throughput            = optional(number, null) # For gp3
+#   }))
+#   default = [{}] # Provides default empty object to trigger internal defaults if not specified
+# }
 
-variable "ebs_block_device" {
-  description = "Configuration for additional EBS block devices."
-  type = list(object({
-    device_name           = string
-    volume_size           = optional(number, 8)
-    volume_type           = optional(string, "gp3")
-    delete_on_termination = optional(bool, true)
-    encrypted             = optional(bool, false)
-    kms_key_id            = optional(string, null)
-    iops                  = optional(number, null)
-    throughput            = optional(number, null)
-    snapshot_id           = optional(string, null)
-  }))
-  default = []
-}
+# variable "ebs_block_device" {
+#   description = "Configuration for additional EBS block devices."
+#   type = list(object({
+#     device_name           = string
+#     volume_size           = optional(number, 8)
+#     volume_type           = optional(string, "gp3")
+#     delete_on_termination = optional(bool, true)
+#     encrypted             = optional(bool, false)
+#     kms_key_id            = optional(string, null)
+#     iops                  = optional(number, null)
+#     throughput            = optional(number, null)
+#     snapshot_id           = optional(string, null)
+#   }))
+#   default = []
+# }
 
 variable "monitoring" {
   description = "If true, enables detailed CloudWatch monitoring for the instance. Additional charges may apply."

@@ -67,7 +67,7 @@ output "default_network_acl_id" {
   value       = aws_vpc.main.default_network_acl_id
 }
 
-output "default_security_group_id" {
-  description = "The ID of the default Security Group for the VPC."
-  value       = aws_vpc.main.default_security_group_id
-}
+# output "default_security_group_id" {
+#   description = "The ID of the default Security Group for the VPC."
+#   value       = aws_vpc.main.default_security_group_id
+# }

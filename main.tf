@@ -63,14 +63,7 @@ resource "aws_security_group" "ssh_access" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"] # Replace with a specific IP range for better security
   }
-  ingress {
-    description = "application port access"
-    from_port   = 5001
-    to_port     = 5001
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] # Replace with a specific IP range for better security
-  }
-
+  
   egress {
     from_port   = 0
     to_port     = 0
@@ -79,6 +72,21 @@ resource "aws_security_group" "ssh_access" {
   }
 
   tags = local.common_tags
+}
+
+resource "aws_security_group" "application_access" {
+  name          = "allow-application-access"
+  description   = "allow application to be accessed on port 5001"
+  vpc_id        = module.vpc.vpc_id
+
+  ingress {
+    description = "application port access"
+    from_port   = 5001
+    to_port     = 5001
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] 
+  }
+  
 }
 
 
@@ -94,7 +102,7 @@ module "ec2" {
   subnet_id       = module.vpc.public_subnet_ids[0]
   key_name        = "fintrack-key" 
   associate_public_ip_address = true
-  vpc_security_group_ids = [aws_security_group.ssh_access.id] # Associate the security group
+  vpc_security_group_ids = [aws_security_group.ssh_access.id, aws_security_group.application_access.id] # Associate the security group
 
   user_data = file("${path.module}/scripts/user_data.sh") # Path to your user data script
 
